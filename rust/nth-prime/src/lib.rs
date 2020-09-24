@@ -1,26 +1,34 @@
-fn is_prime(n: u32, primes: &[u32]) -> bool {
-    for p in primes {
-        if n % p == 0 {
-            return false;
-        }
-    }
-    true
+struct Primer {
+    primes: Vec<u32>,
 }
 
-pub fn nth(n: u32) -> u32 {
-    let mut primes: Vec<u32> = vec![];
-    primes.push(2);
-    let mut curr = 3;
-    let mut max_index: usize = 0;
-    loop {
-        if (max_index as u32) >= n {
-            break;
-        }
-        if is_prime(curr, &primes) {
-            max_index += 1;
-            primes.push(curr)
-        }
-        curr += 1;
+impl Primer {
+    fn new() -> Self {
+        Primer { primes: vec![] }
     }
-    *primes.last().unwrap()
+
+    fn is_prime(&self, n: u32) -> bool {
+        !self
+            .primes
+            .iter()
+            .filter(|&&x| x as f32 <= n as f32 / 2.0)
+            .any(|x| n % x == 0)
+    }
+}
+
+impl Iterator for Primer {
+    type Item = u32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let prime = (self.primes.last().unwrap_or(&1) + 1..)
+            .filter(|&x| self.is_prime(x))
+            .nth(0)
+            .unwrap();
+        self.primes.push(prime);
+        Some(prime)
+    }
+}
+
+pub fn nth(n: usize) -> u32 {
+    Primer::new().nth(n).unwrap()
 }
