@@ -22,7 +22,7 @@ impl Iterator for Primer {
     fn next(&mut self) -> Option<Self::Item> {
         let prime = (self.primes.last().unwrap_or(&1) + 1..)
             .filter(|&x| self.is_prime(x))
-            .nth(0)
+            .next()
             .unwrap();
         self.primes.push(prime);
         Some(prime)
